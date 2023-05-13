@@ -13,3 +13,4 @@ protected:
 	sf::Sprite sprite;
 	sf::Texture texture;
 };
+GameObject::GameObject() {}
