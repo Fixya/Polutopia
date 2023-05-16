@@ -4,11 +4,8 @@
 
 class Player : public GameObject
 {
-private:
-	int unit;
 public:
-	Player(std::string player_file_name, sf::Vector2f pos)
-	{
+	Player(std::string player_file_name, sf::Vector2f pos) {
 		texture.loadFromFile(player_file_name);
 		sprite.setTexture(texture);
 		sf::FloatRect bounds = sprite.getLocalBounds();
@@ -16,12 +13,8 @@ public:
 		sprite.setPosition(pos);
 	}
 
-	void update()
-	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M)) {
-			unit++;
-		}
-	}
+	void update() {}
 
 	sf::Sprite getSprite() { return sprite; }
+private:
 };

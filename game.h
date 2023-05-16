@@ -2,16 +2,23 @@
 #include "settings.h"
 #include "player.h"
 #include <list>
+#include <vector>
+#include "unit.h"
 
 class Game {
 public:
 	Game() {
 		window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE);
 		window.setFramerateLimit(FPS);
-		Player* pw1 = new Player(PLAYER_FILE_NAME, sf::Vector2f{ 50,  60});
+		Player* pw1 = new Player(PLAYER_FILE_NAME, sf::Vector2f{ 360, 145 });
 		playerWhiteSprites.push_back(pw1);
-		Player* pb1 = new Player(PLAYER1_FILE_NAME, sf::Vector2f{ 500, 450});
+		Player* pb1 = new Player(PLAYER1_FILE_NAME, sf::Vector2f{ 633, 540 });
 		playerBlackSprites.push_back(pb1);
+		Units* uw1 = new Units((Units::UnitType)0, sf::Vector2f{ 0.f, -100.f });
+		unitWhiteSprites.push_back(uw1);
+
+		Units* ub1 = new Units((Units::UnitType)0, sf::Vector2f{ 0.f, -100.f });
+		unitBlackSprites.push_back(ub1);
 	}
 
 	void play() {
@@ -24,12 +31,16 @@ public:
 	}
 
 	void land();
+	void unitWMade(int n, Player* player);
+	void unitBMade(int n, Player* player);
 private:
 	sf::RenderWindow window;
 	sf::RectangleShape block[COL_LINE][COL_ROW];
 	std::list<Player*> playerWhiteSprites;
 	std::list<Player*> playerBlackSprites;
 	int qtyWhite = 1, qtyBlack = 1;
+	std::list<Units*> unitWhiteSprites;
+	std::list<Units*> unitBlackSprites;
 
 	void checkEvents() {
 		sf::Event event;
@@ -43,10 +54,21 @@ private:
 		land();
 		for (auto player : playerWhiteSprites) {
 			player->update();
+			for (auto unit : unitWhiteSprites) {
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitWMade(0, player); }
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitWMade(1, player); }
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, player); }
+			}
 		}
 		for (auto player : playerBlackSprites) {
 			player->update();
+			for (auto unit : unitBlackSprites) {
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) { unitBMade(0, player); }
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { unitBMade(1, player); }
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { unitBMade(2, player); }
+			}
 		}
+		
 	}
 
 	void checkCollisions() {}
@@ -54,13 +76,17 @@ private:
 	void draw() {
 		window.clear();
 		for (int j = 0; j < COL_ROW; j++) {
-			for (int i = 0; i < COL_LINE; i++) 
+			for (int i = 0; i < COL_LINE; i++)
 				window.draw(block[i][j]);
 		}
 		for (auto player : playerWhiteSprites)
 			window.draw(player->getSprite());
 		for (auto player : playerBlackSprites)
 			window.draw(player->getSprite());
+		for (auto unit : unitWhiteSprites)
+			unit->draw(window);
+		for (auto unit : unitBlackSprites)
+			unit->draw(window);
 		window.display();
 	}
 };
@@ -80,4 +106,13 @@ void Game::land()
 		f = 50;
 		k += BLOCK_HEIGHT + 5;
 	}
+}
+
+void Game::unitWMade(int n, Player* player) {
+	Units* uw2 = new Units((Units::UnitType)n, player->getPosition());
+	unitWhiteSprites.push_back(uw2);
+}
+void Game::unitBMade(int n, Player* player) {
+	Units* ub2 = new Units((Units::UnitType)n, player->getPosition());
+	unitBlackSprites.push_back(ub2);
 }

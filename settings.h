@@ -21,3 +21,10 @@ const sf::Vector2f BLOCK_POS{ 0, 0 };
 
 const int COL_LINE = 10;
 const int COL_ROW = 10;
+
+const std::string SWORDSMAN_UNITS_FILE_NAME = "swordsman.png";
+const std::string ARCHER_UNITS_FILE_NAME = "archer.png";
+const std::string BUILDER_UNITS_FILE_NAME = "duilder.png";
+const size_t SWORDSMAN_MARGIN = 3;
+const size_t ARCHER_MARGIN = 2;
+const size_t BUILDER_MARGIN = 2;
