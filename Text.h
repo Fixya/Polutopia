@@ -7,9 +7,10 @@ private:
 	sf::Text text;
 
 public:
-	TextObj(sf::Vector2f pos) {
+	TextObj(std::string str, sf::Vector2f pos) {
 		font.loadFromFile(FONT_FILE_NAME);
 		text.setFont(font);
+		text.setString(str);
 		text.setCharacterSize(FONT_SIZE);
 		text.setPosition(pos);
 	}

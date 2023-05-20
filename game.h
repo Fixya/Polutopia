@@ -4,10 +4,13 @@
 #include <list>
 #include <vector>
 #include "unit.h"
+#include "Text.h"
+#include <iostream>
 
 class Game {
 public:
-	Game() {
+	Game() : text_player_go("Player 1", sf::Vector2f{0.f, 0.f})
+	{
 		window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE);
 		window.setFramerateLimit(FPS);
 		Player* pw1 = new Player(PLAYER_FILE_NAME, sf::Vector2f{ 360, 145 });
@@ -41,6 +44,8 @@ private:
 	int qtyWhite = 1, qtyBlack = 1;
 	std::list<Units*> unitWhiteSprites;
 	std::list<Units*> unitBlackSprites;
+	int partic = 0;
+	TextObj text_player_go;
 
 	void checkEvents() {
 		sf::Event event;
@@ -52,21 +57,27 @@ private:
 
 	void update() {
 		land();
-		for (auto player : playerWhiteSprites) {
-			player->update();
-			for (auto unit : unitWhiteSprites) {
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitWMade(0, player); }
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitWMade(1, player); }
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, player); }
+		if (partic == 0) {
+			for (auto player : playerWhiteSprites) {
+				player->update();
+				for (auto unit : unitWhiteSprites) {
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitWMade(0, player); }
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitWMade(1, player); }
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, player); }
+				}
 			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) partic = 1;
 		}
-		for (auto player : playerBlackSprites) {
-			player->update();
-			for (auto unit : unitBlackSprites) {
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) { unitBMade(0, player); }
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { unitBMade(1, player); }
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { unitBMade(2, player); }
+		if (partic == 1) {
+			for (auto player : playerBlackSprites) {
+				player->update();
+				for (auto unit : unitBlackSprites) {
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitBMade(0, player); }
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitBMade(1, player); }
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitBMade(2, player); }
+				}
 			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) partic = 0; 
 		}
 		
 	}
