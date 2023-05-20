@@ -5,11 +5,10 @@
 #include <vector>
 #include "unit.h"
 #include "Text.h"
-#include <iostream>
 
 class Game {
 public:
-	Game() : text_player_go("Player 1", sf::Vector2f{0.f, 0.f})
+	Game() : text_player_go("Player 1", sf::Vector2f{ 0.f, 0.f }), text_player_unit("walking units", sf::Vector2f{ 175.f, 0.f })
 	{
 		window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE);
 		window.setFramerateLimit(FPS);
@@ -36,6 +35,10 @@ public:
 	void land();
 	void unitWMade(int n, Player* player);
 	void unitBMade(int n, Player* player);
+	void unitWhiteUpdate(Player* player);
+	void unitBlackUpdate(Player* player);
+	void playerUnit(sf::RenderWindow& window);
+	void allText(sf::RenderWindow& window);
 private:
 	sf::RenderWindow window;
 	sf::RectangleShape block[COL_LINE][COL_ROW];
@@ -44,8 +47,9 @@ private:
 	int qtyWhite = 1, qtyBlack = 1;
 	std::list<Units*> unitWhiteSprites;
 	std::list<Units*> unitBlackSprites;
-	int partic = 0;
-	TextObj text_player_go;
+	int partic, doru;
+	TextObj text_player_go, text_player_unit;
+	int add = 0;
 
 	void checkEvents() {
 		sf::Event event;
@@ -57,29 +61,31 @@ private:
 
 	void update() {
 		land();
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) && partic == 0) { partic = 1; doru = 0; }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && partic == 1) { partic = 0; doru = 0; }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+			doru = 0;
+			text_player_unit.update("walking units");
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+			doru = 1;
+			text_player_unit.update("Creation of units");
+		}
 		if (partic == 0) {
 			for (auto player : playerWhiteSprites) {
 				player->update();
-				for (auto unit : unitWhiteSprites) {
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitWMade(0, player); }
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitWMade(1, player); }
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, player); }
-				}
+				text_player_go.update("Player 1");
+				unitWhiteUpdate(player);
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) partic = 1;
 		}
 		if (partic == 1) {
 			for (auto player : playerBlackSprites) {
 				player->update();
-				for (auto unit : unitBlackSprites) {
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitBMade(0, player); }
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitBMade(1, player); }
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitBMade(2, player); }
-				}
+				text_player_go.update("Player 2");
+				unitBlackUpdate(player);
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) partic = 0; 
 		}
-		
+
 	}
 
 	void checkCollisions() {}
@@ -90,14 +96,8 @@ private:
 			for (int i = 0; i < COL_LINE; i++)
 				window.draw(block[i][j]);
 		}
-		for (auto player : playerWhiteSprites)
-			window.draw(player->getSprite());
-		for (auto player : playerBlackSprites)
-			window.draw(player->getSprite());
-		for (auto unit : unitWhiteSprites)
-			unit->draw(window);
-		for (auto unit : unitBlackSprites)
-			unit->draw(window);
+		playerUnit(window);
+		allText(window);
 		window.display();
 	}
 };
@@ -126,4 +126,52 @@ void Game::unitWMade(int n, Player* player) {
 void Game::unitBMade(int n, Player* player) {
 	Units* ub2 = new Units((Units::UnitType)n, player->getPosition());
 	unitBlackSprites.push_back(ub2);
+}
+
+void Game::unitWhiteUpdate(Player* player) {
+	for (auto unit : unitWhiteSprites) {
+		if (doru == 1) {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitWMade(0, player); }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitWMade(1, player); }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, player); }
+		}
+		else {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && add == 0) { unit->setPosition(unit->getPosition() - sf::Vector2f{ 0.f, 65.f }); add++; }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && add == 0) { unit->setPosition(unit->getPosition() + sf::Vector2f{ 0.f, 65.f }); add++; }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) { unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f }); }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f }); }
+		}
+	}
+}
+void Game::unitBlackUpdate(Player* player) {
+	
+	for (auto unit : unitBlackSprites) {
+		if (doru == 1) {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitBMade(3, player); }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitBMade(4, player); }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitBMade(5, player); }
+		}
+		else {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unit->setPosition(unit->getPosition() - sf::Vector2f{ 0.f, 65.f }); }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { unit->setPosition(unit->getPosition() + sf::Vector2f{ 0.f, 65.f }); }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) { unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f }); }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f }); }
+		}
+	}
+}
+
+void Game::playerUnit(sf::RenderWindow& window) {
+	for (auto player : playerWhiteSprites)
+		window.draw(player->getSprite());
+	for (auto player : playerBlackSprites)
+		window.draw(player->getSprite());
+	for (auto unit : unitWhiteSprites)
+		unit->draw(window);
+	for (auto unit : unitBlackSprites)
+		unit->draw(window);
+}
+
+void Game::allText(sf::RenderWindow& window) {
+	text_player_go.draw(window);
+	text_player_unit.draw(window);
 }
