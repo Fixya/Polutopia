@@ -17,4 +17,5 @@ public:
 
 	sf::Sprite getSprite() { return sprite; }
 private:
+
 };

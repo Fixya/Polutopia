@@ -141,7 +141,7 @@ void Game::unitWhiteUpdate(Player* player) {
 				if (unit->getPositionY() > 135) {
 					unit->setPosition(unit->getPosition() - sf::Vector2f{ 0.f, 65.f });
 					prevTimeWhite = currTime;
-				}			
+				}
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currTime - prevTimeWhite > INTERVAL_TIME) {
 				if (unit->getPositionY() < 380) {
@@ -183,7 +183,7 @@ void Game::unitBlackUpdate(Player* player) {
 				}
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currTime - prevTimeBlack > INTERVAL_TIME) {
-				unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f }); 
+				unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f });
 				prevTimeBlack = currTime;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currTime - prevTimeBlack > INTERVAL_TIME) {

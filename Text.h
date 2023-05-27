@@ -16,7 +16,5 @@ public:
 	}
 
 	void update(std::string str) { text.setString(str); }
-
 	void draw(sf::RenderWindow& window) { window.draw(text); }
-
 };
