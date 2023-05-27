@@ -26,3 +26,5 @@ const std::string BUILDER_UNITS_FILE_NAME = "duilder.png";
 const std::string SWORDSMAN1_UNITS_FILE_NAME = "swordsman1.png";
 const std::string ARCHER1_UNITS_FILE_NAME = "archer1.png";
 const std::string BUILDER1_UNITS_FILE_NAME = "duilder1.png";
+
+const int INTERVAL_TIME = 750;

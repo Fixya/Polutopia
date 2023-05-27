@@ -20,9 +20,10 @@ public:
 			playerBlackSprites.push_back(pb1);
 			Units* uw1 = new Units((Units::UnitType)0, sf::Vector2f{ 170.f, float(75 + 65 * i) });
 			unitWhiteSprites.push_back(uw1);
-			Units* ub1 = new Units((Units::UnitType)0, sf::Vector2f{ 800.f, float(75 + 65 * i) });
+			Units* ub1 = new Units((Units::UnitType)3, sf::Vector2f{ 800.f, float(75 + 65 * i) });
 			unitBlackSprites.push_back(ub1);
 		}
+		timer.restart();
 	}
 
 	void play() {
@@ -51,7 +52,9 @@ private:
 	std::list<Units*> unitBlackSprites;
 	int partic, doru;
 	TextObj text_player_go, text_player_unit;
-	std::list<int> goUnitW, goUnitB;
+	//std::list<int> goUnitW, goUnitB;
+	sf::Clock timer;
+	int currTime, prevTimeBlack, prevTimeWhite;
 
 	void checkEvents() {
 		sf::Event event;
@@ -62,6 +65,7 @@ private:
 	}
 
 	void update() {
+		currTime = timer.getElapsedTime().asMilliseconds();
 		land();
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) && partic == 0) { partic = 1; doru = 0; }
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && partic == 1) { partic = 0; doru = 0; }
@@ -111,7 +115,7 @@ void Game::land()
 		{
 			block[i][j].setSize(sf::Vector2f{ BLOCK_WIDTH, BLOCK_HEIGHT });
 			block[i][j].setFillColor(BLOCK_COLOR);
-			block[i][j].setPosition(50+(BLOCK_WIDTH + 5)*i, BLOCK_HEIGHT+(BLOCK_HEIGHT + 5)*j);
+			block[i][j].setPosition(50 + (BLOCK_WIDTH + 5) * i, BLOCK_HEIGHT + (BLOCK_HEIGHT + 5) * j);
 		}
 	}
 }
@@ -133,30 +137,59 @@ void Game::unitWhiteUpdate(Player* player) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, player); }
 		}
 		else {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unit->setPosition(unit->getPosition() - sf::Vector2f{ 0.f, 65.f }); }
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { unit->setPosition(unit->getPosition() + sf::Vector2f{ 0.f, 65.f }); }
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) { unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f }); }
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currTime - prevTimeWhite > INTERVAL_TIME) {
+				if (unit->getPositionY() > 135) {
+					unit->setPosition(unit->getPosition() - sf::Vector2f{ 0.f, 65.f });
+					prevTimeWhite = currTime;
+				}			
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currTime - prevTimeWhite > INTERVAL_TIME) {
+				if (unit->getPositionY() < 380) {
+					unit->setPosition(unit->getPosition() + sf::Vector2f{ 0.f, 65.f });
+					prevTimeWhite = currTime;
+				}
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currTime - prevTimeWhite > INTERVAL_TIME) {
+				unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f });
+				prevTimeWhite = currTime;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currTime - prevTimeWhite > INTERVAL_TIME) {
+				unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f });
+				prevTimeWhite = currTime;
+			}
 		}
 	}
 }
 void Game::unitBlackUpdate(Player* player) {
-	
+
 	for (auto unit : unitBlackSprites) {
 		if (doru == 1) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitBMade(3, player); }
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitBMade(4, player); }
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitBMade(5, player); }
-			
+
 		}
 		else {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && )  { 
-				unit->setPosition(unit->getPosition() - sf::Vector2f{ 0.f, 65.f });  
-				
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currTime - prevTimeBlack > INTERVAL_TIME) {
+				if (unit->getPositionY() > 135) {
+					unit->setPosition(unit->getPosition() - sf::Vector2f{ 0.f, 65.f });
+					prevTimeBlack = currTime;
+				}
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) { unit->setPosition(unit->getPosition() + sf::Vector2f{ 0.f, 65.f }); }
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) { unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f }); }
-			//if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) { add++; }
-			//float x = sf::Mouse::getPosition().x;
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currTime - prevTimeBlack > INTERVAL_TIME) {
+				if (unit->getPositionY() < 380) {
+					unit->setPosition(unit->getPosition() + sf::Vector2f{ 0.f, 65.f });
+					prevTimeBlack = currTime;
+				}
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currTime - prevTimeBlack > INTERVAL_TIME) {
+				unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f }); 
+				prevTimeBlack = currTime;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currTime - prevTimeBlack > INTERVAL_TIME) {
+				unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f });
+				prevTimeBlack = currTime;
+			}
 		}
 	}
 }
