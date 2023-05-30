@@ -93,7 +93,18 @@ private:
 		}
 	}
 
-	void checkCollisions() {}
+	void checkCollisions() {
+		for (auto unitW : unitWhiteSprites) {
+			sf::FloatRect unitWhiteHitBox = unitWhiteSprites.getHitBox();
+			for (auto unitB : unitBlackSprites) {
+				sf::FloatRect unitBlackHitBox = unitBlackSprites.getHitBox();
+				if (unitWhiteHitBox.intersects(unitBlackHitBox))
+				{
+
+				}
+			}
+		}
+	}
 
 	void draw() {
 		window.clear();
@@ -150,8 +161,10 @@ void Game::unitWhiteUpdate(Player* player) {
 				}
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currTime - prevTimeWhite > INTERVAL_TIME) {
-				unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f });
-				prevTimeWhite = currTime;
+				if (unit->getPositionX() > 90) {
+					unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f });
+					prevTimeWhite = currTime;
+				}
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currTime - prevTimeWhite > INTERVAL_TIME) {
 				unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f });
@@ -183,12 +196,16 @@ void Game::unitBlackUpdate(Player* player) {
 				}
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currTime - prevTimeBlack > INTERVAL_TIME) {
-				unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f });
-				prevTimeBlack = currTime;
+				if (unit->getPositionX() > 90) {
+					unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f });
+					prevTimeBlack = currTime;
+				}
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currTime - prevTimeBlack > INTERVAL_TIME) {
-				unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f });
-				prevTimeBlack = currTime;
+				if (unit->getPositionX() < 820) {
+					unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f });
+					prevTimeBlack = currTime;
+				}
 			}
 		}
 	}
