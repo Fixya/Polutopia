@@ -14,8 +14,6 @@ public:
 	}
 
 	void update() {}
-
-	sf::Sprite getSprite() { return sprite; }
 private:
 
 };

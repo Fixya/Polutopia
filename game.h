@@ -5,6 +5,7 @@
 #include <vector>
 #include "unit.h"
 #include "Text.h"
+#include "mark.h"
 
 
 class Game {
@@ -53,6 +54,7 @@ private:
 	int partic, doru;
 	TextObj text_player_go, text_player_unit;
 	//std::list<int> goUnitW, goUnitB;
+	Mark mark;
 	sf::Clock timer;
 	int currTime, prevTimeBlack, prevTimeWhite;
 
@@ -67,8 +69,8 @@ private:
 	void update() {
 		currTime = timer.getElapsedTime().asMilliseconds();
 		land();
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) && partic == 0) { partic = 1; doru = 0; }
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && partic == 1) { partic = 0; doru = 0; }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) && partic == 0) { partic = 1; }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && partic == 1) { partic = 0; }
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
 			doru = 0;
 			text_player_unit.update("walking units");
@@ -91,16 +93,28 @@ private:
 				unitBlackUpdate(player);
 			}
 		}
+		mark.update(currTime);
 	}
 
 	void checkCollisions() {
-		for (auto unitW : unitWhiteSprites) {
-			sf::FloatRect unitWhiteHitBox = unitW->getHitBox();
-			for (auto unitB : unitBlackSprites) {
-				sf::FloatRect unitBlackHitBox = unitB->getHitBox();
-				if (unitWhiteHitBox.intersects(unitBlackHitBox)) {
-					if (partic == 0) { unitB->setDel(); }
-					if (partic == 1) { unitW->setDel(); }
+		sf::FloatRect markHitBox = mark.getHitBox();
+		for (auto playerW : playerWhiteSprites) {
+			for (auto playerB : playerBlackSprites) {
+				for (auto unitW : unitWhiteSprites) {
+					sf::FloatRect unitWhiteHitBox = unitW->getHitBox();
+					for (auto unitB : unitBlackSprites) {
+						sf::FloatRect unitBlackHitBox = unitB->getHitBox();
+						if (unitWhiteHitBox.intersects(unitBlackHitBox)) {
+							if (partic == 0) { unitB->setDel(); }
+							if (partic == 1) { unitW->setDel(); }
+						}
+						if (markHitBox.intersects(unitBlackHitBox) && partic == 1) {
+							unitBlackUpdate(playerB);
+						}
+					}
+					if (markHitBox.intersects(unitWhiteHitBox) && partic == 0) {
+						unitWhiteUpdate(playerW);
+					}
 				}
 			}
 		}
@@ -221,6 +235,7 @@ void Game::playerUnit(sf::RenderWindow& window) {
 		unit->draw(window);
 	for (auto unit : unitBlackSprites)
 		unit->draw(window);
+	mark.draw(window);
 }
 
 void Game::allText(sf::RenderWindow& window) {

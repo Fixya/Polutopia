@@ -10,6 +10,7 @@ public:
 	float getPositionX() { return sprite.getPosition().x; }
 	void setPosition(sf::Vector2f pos) { sprite.setPosition(pos); }
 	sf::FloatRect getHitBox() { return sprite.getGlobalBounds(); }
+	sf::Sprite getSprite() { return sprite; }
 protected:
 	sf::Sprite sprite;
 	sf::Texture texture;

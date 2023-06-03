@@ -9,6 +9,7 @@ public:
 	void draw(sf::RenderWindow& window);
 	bool isToDel();
 	void setDel();
+
 private:
 	UnitType type;
 	bool del = false;
