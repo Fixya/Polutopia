@@ -95,15 +95,17 @@ private:
 
 	void checkCollisions() {
 		for (auto unitW : unitWhiteSprites) {
-			sf::FloatRect unitWhiteHitBox = unitWhiteSprites.getHitBox();
+			sf::FloatRect unitWhiteHitBox = unitW->getHitBox();
 			for (auto unitB : unitBlackSprites) {
-				sf::FloatRect unitBlackHitBox = unitBlackSprites.getHitBox();
-				if (unitWhiteHitBox.intersects(unitBlackHitBox))
-				{
-
+				sf::FloatRect unitBlackHitBox = unitB->getHitBox();
+				if (unitWhiteHitBox.intersects(unitBlackHitBox)) {
+					if (partic == 0) { unitB->setDel(); }
+					if (partic == 1) { unitW->setDel(); }
 				}
 			}
 		}
+		unitWhiteSprites.remove_if([](Units* unitB) {return unitB->isToDel(); });
+		unitBlackSprites.remove_if([](Units* unitB) {return unitB->isToDel(); });
 	}
 
 	void draw() {
@@ -132,11 +134,11 @@ void Game::land()
 }
 
 void Game::unitWMade(int n, Player* player) {
-	Units* uw2 = new Units((Units::UnitType)n, player->getPosition());
+	Units* uw2 = new Units((Units::UnitType)n, (player->getPosition() + sf::Vector2f{ 80.f, -5.f }));
 	unitWhiteSprites.push_back(uw2);
 }
 void Game::unitBMade(int n, Player* player) {
-	Units* ub2 = new Units((Units::UnitType)n, player->getPosition());
+	Units* ub2 = new Units((Units::UnitType)n, (player->getPosition() - sf::Vector2f{ 100.f, 5.f }));
 	unitBlackSprites.push_back(ub2);
 }
 
@@ -174,7 +176,6 @@ void Game::unitWhiteUpdate(Player* player) {
 	}
 }
 void Game::unitBlackUpdate(Player* player) {
-
 	for (auto unit : unitBlackSprites) {
 		if (doru == 1) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitBMade(3, player); }
