@@ -39,8 +39,10 @@ public:
 	void land();
 	void unitWMade(int n, Player* player);
 	void unitBMade(int n, Player* player);
-	void unitWhiteUpdate(Player* player);
-	void unitBlackUpdate(Player* player);
+	void playerWhiteUpdate(Player* player);
+	void playerBlackUpdate(Player* player);
+	void unitWhiteUpdate(Units* unitW);
+	void unitBlackUpdate(Units* unitB, Player* player);
 	void playerUnit(sf::RenderWindow& window);
 	void allText(sf::RenderWindow& window);
 private:
@@ -53,8 +55,8 @@ private:
 	std::list<Units*> unitBlackSprites;
 	int partic, doru;
 	TextObj text_player_go, text_player_unit;
-	//std::list<int> goUnitW, goUnitB;
 	Mark mark;
+	Mark banMark;
 	sf::Clock timer;
 	int currTime, prevTimeBlack, prevTimeWhite;
 
@@ -96,22 +98,36 @@ private:
 
 	void checkCollisions() {
 		sf::FloatRect markHitBox = mark.getHitBox();
-		for (auto playerW : playerWhiteSprites) {
-			for (auto playerB : playerBlackSprites) {
-				for (auto unitW : unitWhiteSprites) {
-					sf::FloatRect unitWhiteHitBox = unitW->getHitBox();
-					for (auto unitB : unitBlackSprites) {
-						sf::FloatRect unitBlackHitBox = unitB->getHitBox();
-						if (unitWhiteHitBox.intersects(unitBlackHitBox)) {
-							if (partic == 0) { unitB->setDel(); }
-							if (partic == 1) { unitW->setDel(); }
-						}
-						if (markHitBox.intersects(unitBlackHitBox) && partic == 1) {
-							unitBlackUpdate(playerB);
-						}
+		sf::FloatRect banMarkHitBox = banMark.getHitBox();
+		if(banMarkHitBox.intersects(markHitBox) {
+
+		}
+		else {
+			for (auto playerW : playerWhiteSprites) {
+				sf::FloatRect playerWhiteHitBox = playerW->getHitBox();
+					if (markHitBox.intersects(playerWhiteHitBox) && partic == 0) {
+						playerWhiteUpdate(playerW);
 					}
-					if (markHitBox.intersects(unitWhiteHitBox) && partic == 0) {
-						unitWhiteUpdate(playerW);
+				for (auto playerB : playerBlackSprites) {
+					sf::FloatRect playerBlackHitBox = playerB->getHitBox();
+						if (markHitBox.intersects(playerBlackHitBox) && partic == 0) {
+							playerBlackUpdate(playerB);
+						}
+					for (auto unitW : unitWhiteSprites) {
+						sf::FloatRect unitWhiteHitBox = unitW->getHitBox();
+						for (auto unitB : unitBlackSprites) {
+							sf::FloatRect unitBlackHitBox = unitB->getHitBox();
+							if (unitWhiteHitBox.intersects(unitBlackHitBox)) {
+								if (partic == 0) { unitB->setDel(); }
+								if (partic == 1) { unitW->setDel(); }
+							}
+							if (markHitBox.intersects(unitBlackHitBox) && partic == 1) {
+								unitBlackUpdate(unitB, playerB);
+							}
+						}
+						if (markHitBox.intersects(unitWhiteHitBox) && partic == 0) {
+							unitWhiteUpdate(unitW);
+						}
 					}
 				}
 			}
@@ -154,71 +170,73 @@ void Game::unitBMade(int n, Player* player) {
 	unitBlackSprites.push_back(ub2);
 }
 
-void Game::unitWhiteUpdate(Player* player) {
-	for (auto unit : unitWhiteSprites) {
-		if (doru == 1) {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitWMade(0, player); }
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitWMade(1, player); }
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, player); }
-		}
-		else {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currTime - prevTimeWhite > INTERVAL_TIME) {
-				if (unit->getPositionY() > 135) {
-					unit->setPosition(unit->getPosition() - sf::Vector2f{ 0.f, 65.f });
-					prevTimeWhite = currTime;
-				}
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currTime - prevTimeWhite > INTERVAL_TIME) {
-				if (unit->getPositionY() < 380) {
-					unit->setPosition(unit->getPosition() + sf::Vector2f{ 0.f, 65.f });
-					prevTimeWhite = currTime;
-				}
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currTime - prevTimeWhite > INTERVAL_TIME) {
-				if (unit->getPositionX() > 90) {
-					unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f });
-					prevTimeWhite = currTime;
-				}
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currTime - prevTimeWhite > INTERVAL_TIME) {
-				unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f });
+void Game::playerWhiteUpdate(Player* player) {
+	if (doru == 1) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitWMade(0, player); }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitWMade(1, player); }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, player); }
+	}
+}
+
+void Game::playerBlackUpdate(Player* player) {
+	if (doru == 1) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitBMade(3, player); }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitBMade(4, player); }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitBMade(5, player); }
+	}
+}
+
+void Game::unitWhiteUpdate(Units* unitW) {
+	if (doru == 0) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currTime - prevTimeWhite > INTERVAL_TIME) {
+			if (unitW->getPositionY() > 135) {
+				unitW->setPosition(unitW->getPosition() - sf::Vector2f{ 0.f, 65.f });
 				prevTimeWhite = currTime;
 			}
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currTime - prevTimeWhite > INTERVAL_TIME) {
+			if (unitW->getPositionY() < 380) {
+				unitW->setPosition(unitW->getPosition() + sf::Vector2f{ 0.f, 65.f });
+				prevTimeWhite = currTime;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currTime - prevTimeWhite > INTERVAL_TIME) {
+			if (unitW->getPositionX() > 90) {
+				unitW->setPosition(unitW->getPosition() - sf::Vector2f{ 90.f, 0.f });
+				prevTimeWhite = currTime;
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currTime - prevTimeWhite > INTERVAL_TIME) {
+			unitW->setPosition(unitW->getPosition() + sf::Vector2f{ 90.f, 0.f });
+			prevTimeWhite = currTime;
+		}
 	}
 }
-void Game::unitBlackUpdate(Player* player) {
-	for (auto unit : unitBlackSprites) {
-		if (doru == 1) {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitBMade(3, player); }
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitBMade(4, player); }
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitBMade(5, player); }
 
+void Game::unitBlackUpdate(Units* unitB, Player* player) {
+	if (doru == 0) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currTime - prevTimeBlack > INTERVAL_TIME) {
+			if (unitB->getPositionY() > 135) {
+				unitB->setPosition(unitB->getPosition() - sf::Vector2f{ 0.f, 65.f });
+				prevTimeBlack = currTime;
+			}
 		}
-		else {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currTime - prevTimeBlack > INTERVAL_TIME) {
-				if (unit->getPositionY() > 135) {
-					unit->setPosition(unit->getPosition() - sf::Vector2f{ 0.f, 65.f });
-					prevTimeBlack = currTime;
-				}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currTime - prevTimeBlack > INTERVAL_TIME) {
+			if (unitB->getPositionY() < 380) {
+				unitB->setPosition(unitB->getPosition() + sf::Vector2f{ 0.f, 65.f });
+				prevTimeBlack = currTime;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && currTime - prevTimeBlack > INTERVAL_TIME) {
-				if (unit->getPositionY() < 380) {
-					unit->setPosition(unit->getPosition() + sf::Vector2f{ 0.f, 65.f });
-					prevTimeBlack = currTime;
-				}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currTime - prevTimeBlack > INTERVAL_TIME) {
+			if (unitB->getPositionX() > 90) {
+				unitB->setPosition(unitB->getPosition() - sf::Vector2f{ 90.f, 0.f });
+				prevTimeBlack = currTime;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) && currTime - prevTimeBlack > INTERVAL_TIME) {
-				if (unit->getPositionX() > 90) {
-					unit->setPosition(unit->getPosition() - sf::Vector2f{ 90.f, 0.f });
-					prevTimeBlack = currTime;
-				}
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currTime - prevTimeBlack > INTERVAL_TIME) {
-				if (unit->getPositionX() < 820) {
-					unit->setPosition(unit->getPosition() + sf::Vector2f{ 90.f, 0.f });
-					prevTimeBlack = currTime;
-				}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) && currTime - prevTimeBlack > INTERVAL_TIME) {
+			if (unitB->getPositionX() < 820) {
+				unitB->setPosition(unitB->getPosition() + sf::Vector2f{ 90.f, 0.f });
+				prevTimeBlack = currTime;
 			}
 		}
 	}
