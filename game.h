@@ -83,14 +83,12 @@ private:
 			for (auto player : playerWhiteSprites) {
 				player->update();
 				text_player_go.update("Player 1");
-				unitWhiteUpdate(player);
 			}
 		}
 		if (partic == 1) {
 			for (auto player : playerBlackSprites) {
 				player->update();
 				text_player_go.update("Player 2");
-				unitBlackUpdate(player);
 			}
 		}
 		mark.update(currTime);
@@ -118,7 +116,7 @@ private:
 				}
 			}
 		}
-		unitWhiteSprites.remove_if([](Units* unitB) {return unitB->isToDel(); });
+		unitWhiteSprites.remove_if([](Units* unitW) {return unitW->isToDel(); });
 		unitBlackSprites.remove_if([](Units* unitB) {return unitB->isToDel(); });
 	}
 
