@@ -28,6 +28,6 @@ const std::string ARCHER1_UNITS_FILE_NAME = "archer1.png";
 const std::string BUILDER1_UNITS_FILE_NAME = "duilder1.png";
 
 const std::string MARK_FILE_NAME = "mark.png";
-const std::string BAN_MARK_FILE_NAME = "mark.png";
+const std::string BAN_MARK_FILE_NAME = "ban_mark.png";
 const int INTERVAL_TIME = 750;
 const int MARK_INTERVAL_TIME = 150;

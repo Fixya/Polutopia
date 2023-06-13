@@ -30,8 +30,6 @@ public:
 			prevTimeMark = currTime;
 		}
 	}
-
-	void draw(sf::RenderWindow& window) { window.draw(sprite); }
 private:
 	int prevTimeMark;
 };

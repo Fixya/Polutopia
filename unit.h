@@ -6,7 +6,6 @@ class Units : public GameObject
 public:
 	enum UnitType { SWORDSMAN, ARCHER, BUILDER, SWORDSMAN1, ARCHER1, BUILDER1 };
 	Units(UnitType type, sf::Vector2f position);
-	void draw(sf::RenderWindow& window);
 	bool isToDel();
 	void setDel();
 
@@ -56,8 +55,6 @@ Units::Units(UnitType type, sf::Vector2f position)
 		break;
 	}
 }
-
-void Units::draw(sf::RenderWindow& window) { window.draw(sprite); }
 
 bool Units::isToDel() { return del; }
 void Units::setDel() { del = true; }
