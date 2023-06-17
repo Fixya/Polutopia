@@ -2,10 +2,10 @@
 #include "settings.h"
 #include "game_object.h"
 
-class Player : public GameObject
+class Building : public GameObject
 {
 public:
-	Player(std::string player_file_name, sf::Vector2f pos) {
+	Building(std::string player_file_name, sf::Vector2f pos) {
 		texture.loadFromFile(player_file_name);
 		sprite.setTexture(texture);
 		sf::FloatRect bounds = sprite.getLocalBounds();

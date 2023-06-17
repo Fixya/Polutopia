@@ -16,10 +16,10 @@ public:
 		window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_TITLE);
 		window.setFramerateLimit(FPS);
 		for (int i = 0; i < 6; i++) {
-			Player* pw1 = new Player(PLAYER_FILE_NAME, sf::Vector2f{ 90.f, float(80 + 65 * i) });
-			playerWhiteSprites.push_back(pw1);
-			Player* pb1 = new Player(PLAYER1_FILE_NAME, sf::Vector2f{ 900.f, float(80 + 65 * i) });
-			playerBlackSprites.push_back(pb1);
+			Building* pw1 = new Building(PLAYER_FILE_NAME, sf::Vector2f{ 90.f, float(80 + 65 * i) });
+			buildingWhiteSprites.push_back(pw1);
+			Building* pb1 = new Building(PLAYER1_FILE_NAME, sf::Vector2f{ 900.f, float(80 + 65 * i) });
+			buildingBlackSprites.push_back(pb1);
 			Units* uw1 = new Units((Units::UnitType)0, sf::Vector2f{ 170.f, float(75 + 65 * i) });
 			unitWhiteSprites.push_back(uw1);
 			Units* ub1 = new Units((Units::UnitType)3, sf::Vector2f{ 800.f, float(75 + 65 * i) });
@@ -40,20 +40,20 @@ public:
 	}
 
 	void land();
-	void unitWMade(int n, Player* player);
-	void unitBMade(int n, Player* player);
+	void unitWMade(int n, Building* building);
+	void unitBMade(int n, Building* building);
 	void banUnits(Units* unit);
-	void playerWhiteUpdate(Player* player);
-	void playerBlackUpdate(Player* player);
+	void playerWhiteUpdate(Building* building);
+	void playerBlackUpdate(Building* building);
 	void unitWhiteUpdate(Units* unitW);
-	void unitBlackUpdate(Units* unitB, Player* player);
+	void unitBlackUpdate(Units* unitB, Building* building);
 	void playerUnit(sf::RenderWindow& window);
 	void allText(sf::RenderWindow& window);
 private:
 	sf::RenderWindow window;
 	sf::RectangleShape block[COL_LINE][COL_ROW];
-	std::list<Player*> playerWhiteSprites;
-	std::list<Player*> playerBlackSprites;
+	std::list<Building*> buildingWhiteSprites;
+	std::list<Building*> buildingBlackSprites;
 	int qtyWhite = 1, qtyBlack = 1;
 	std::list<Units*> unitWhiteSprites;
 	std::list<Units*> unitBlackSprites;
@@ -98,18 +98,19 @@ private:
 			text_player_unit.update("Creation of units");
 		}
 		if (turn == 0) {
-			for (auto player : playerWhiteSprites) {
-				player->update();
+			for (auto building : buildingWhiteSprites) {
+				building->update();
 				text_player_go.update("Player 1");
 			}
 		}
 		if (turn == 1) {
-			for (auto player : playerBlackSprites) {
-				player->update();
+			for (auto building : buildingBlackSprites) {
+				building->update();
 				text_player_go.update("Player 2");
 			}
 		}
 		text_for_ban.update("u can do");
+		permission = 0;
 		mark.update(currTime);
 	}
 
@@ -118,35 +119,34 @@ private:
 		for (auto banMarks : banMark) {
 			sf::FloatRect banMarkHitBox = banMarks->getHitBox();
 			if (markHitBox.intersects(banMarkHitBox)) {
+				permission = 1;
 				text_for_ban.update("u can't do");
 			}
-			else {
-				for (auto playerW : playerWhiteSprites) {
-					sf::FloatRect playerWhiteHitBox = playerW->getHitBox();
-					if (markHitBox.intersects(playerWhiteHitBox) && turn == 0) {
-						playerWhiteUpdate(playerW);
+		}
+		for (auto playerW : buildingWhiteSprites) {
+			sf::FloatRect playerWhiteHitBox = playerW->getHitBox();
+			if (markHitBox.intersects(playerWhiteHitBox) && turn == 0) {
+				playerWhiteUpdate(playerW);
+			}
+			for (auto playerB : buildingBlackSprites) {
+				sf::FloatRect playerBlackHitBox = playerB->getHitBox();
+				if (markHitBox.intersects(playerBlackHitBox) && turn == 0) {
+					playerBlackUpdate(playerB);
+				}
+				for (auto unitW : unitWhiteSprites) {
+					sf::FloatRect unitWhiteHitBox = unitW->getHitBox();
+					for (auto unitB : unitBlackSprites) {
+						sf::FloatRect unitBlackHitBox = unitB->getHitBox();
+						if (unitWhiteHitBox.intersects(unitBlackHitBox)) {
+							if (turn == 0) { unitB->setDel(); }
+							if (turn == 1) { unitW->setDel(); }
+						}
+						if (markHitBox.intersects(unitBlackHitBox) && turn == 1) {
+							unitBlackUpdate(unitB, playerB);
+						}
 					}
-					for (auto playerB : playerBlackSprites) {
-						sf::FloatRect playerBlackHitBox = playerB->getHitBox();
-						if (markHitBox.intersects(playerBlackHitBox) && turn == 0) {
-							playerBlackUpdate(playerB);
-						}
-						for (auto unitW : unitWhiteSprites) {
-							sf::FloatRect unitWhiteHitBox = unitW->getHitBox();
-							for (auto unitB : unitBlackSprites) {
-								sf::FloatRect unitBlackHitBox = unitB->getHitBox();
-								if (unitWhiteHitBox.intersects(unitBlackHitBox)) {
-									if (turn == 0) { unitB->setDel(); }
-									if (turn == 1) { unitW->setDel(); }
-								}
-								if (markHitBox.intersects(unitBlackHitBox) && turn == 1) {
-									unitBlackUpdate(unitB, playerB);
-								}
-							}
-							if (markHitBox.intersects(unitWhiteHitBox) && turn == 0) {
-								unitWhiteUpdate(unitW);
-							}
-						}
+					if (markHitBox.intersects(unitWhiteHitBox) && turn == 0) {
+						unitWhiteUpdate(unitW);
 					}
 				}
 			}
@@ -181,12 +181,12 @@ void Game::land()
 	}
 }
 
-void Game::unitWMade(int n, Player* player) {
-	Units* uw2 = new Units((Units::UnitType)n, (player->getPosition() + sf::Vector2f{ 80.f, -5.f }));
+void Game::unitWMade(int n, Building* building) {
+	Units* uw2 = new Units((Units::UnitType)n, (building->getPosition() + sf::Vector2f{ 80.f, -5.f }));
 	unitWhiteSprites.push_back(uw2);
 }
-void Game::unitBMade(int n, Player* player) {
-	Units* ub2 = new Units((Units::UnitType)n, (player->getPosition() - sf::Vector2f{ 100.f, 5.f }));
+void Game::unitBMade(int n, Building* building) {
+	Units* ub2 = new Units((Units::UnitType)n, (building->getPosition() - sf::Vector2f{ 100.f, 5.f }));
 	unitBlackSprites.push_back(ub2);
 }
 
@@ -195,24 +195,24 @@ void Game::banUnits(Units* unit) {
 	banMark.push_back(bu2);
 }
 
-void Game::playerWhiteUpdate(Player* player) {
-	if (alternate == 1) {
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitWMade(0, player); }
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitWMade(1, player); }
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, player); }
+void Game::playerWhiteUpdate(Building* building) {
+	if (alternate == 1 && permission == 0) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitWMade(0, building); }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitWMade(1, building); }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitWMade(2, building); }
 	}
 }
 
-void Game::playerBlackUpdate(Player* player) {
-	if (alternate == 1) {
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitBMade(3, player); }
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitBMade(4, player); }
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitBMade(5, player); }
+void Game::playerBlackUpdate(Building* building) {
+	if (alternate == 1 && permission == 0) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) { unitBMade(3, building); }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) { unitBMade(4, building); }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E)) { unitBMade(5, building); }
 	}
 }
 
 void Game::unitWhiteUpdate(Units* unitW) {
-	if (alternate == 0) {
+	if (alternate == 0 && permission == 0) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currTime - prevTimeWhite > INTERVAL_TIME) {
 			if (unitW->getPositionY() > 135) {
 				unitW->setPosition(unitW->getPosition() - sf::Vector2f{ 0.f, 65.f });
@@ -244,8 +244,8 @@ void Game::unitWhiteUpdate(Units* unitW) {
 	}
 }
 
-void Game::unitBlackUpdate(Units* unitB, Player* player) {
-	if (alternate == 0) {
+void Game::unitBlackUpdate(Units* unitB, Building* building) {
+	if (alternate == 0 && permission == 0) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && currTime - prevTimeBlack > INTERVAL_TIME) {
 			if (unitB->getPositionY() > 135) {
 				unitB->setPosition(unitB->getPosition() - sf::Vector2f{ 0.f, 65.f });
@@ -278,10 +278,10 @@ void Game::unitBlackUpdate(Units* unitB, Player* player) {
 }
 
 void Game::playerUnit(sf::RenderWindow& window) {
-	for (auto player : playerWhiteSprites)
-		window.draw(player->getSprite());
-	for (auto player : playerBlackSprites)
-		window.draw(player->getSprite());
+	for (auto building : buildingWhiteSprites)
+		window.draw(building->getSprite());
+	for (auto building : buildingBlackSprites)
+		window.draw(building->getSprite());
 	for (auto unit : unitWhiteSprites)
 		unit->draw(window);
 	for (auto unit : unitBlackSprites)
