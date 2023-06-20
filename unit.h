@@ -4,7 +4,7 @@
 class Units : public GameObject
 {
 public:
-	enum UnitType { SWORDSMAN, ARCHER, BUILDER, SWORDSMAN1, ARCHER1, BUILDER1 };
+	enum UnitType { SWORDSMAN, SWORDSMAN1 };
 	Units(UnitType type, sf::Vector2f position);
 	bool isToDel();
 	void setDel();
@@ -23,33 +23,9 @@ Units::Units(UnitType type, sf::Vector2f position)
 		sprite.setTexture(texture);
 		sprite.setPosition(position);
 		break;
-	case ARCHER:
-		this->type = type;
-		texture.loadFromFile(ARCHER_UNITS_FILE_NAME);
-		sprite.setTexture(texture);
-		sprite.setPosition(position);
-		break;
-	case BUILDER:
-		this->type = type;
-		texture.loadFromFile(BUILDER_UNITS_FILE_NAME);
-		sprite.setTexture(texture);
-		sprite.setPosition(position);
-		break;
 	case SWORDSMAN1:
 		this->type = type;
 		texture.loadFromFile(SWORDSMAN1_UNITS_FILE_NAME);
-		sprite.setTexture(texture);
-		sprite.setPosition(position);
-		break;
-	case ARCHER1:
-		this->type = type;
-		texture.loadFromFile(ARCHER1_UNITS_FILE_NAME);
-		sprite.setTexture(texture);
-		sprite.setPosition(position);
-		break;
-	case BUILDER1:
-		this->type = type;
-		texture.loadFromFile(BUILDER1_UNITS_FILE_NAME);
 		sprite.setTexture(texture);
 		sprite.setPosition(position);
 		break;
