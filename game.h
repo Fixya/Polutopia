@@ -61,7 +61,7 @@ private:
 	int turn, alternate, permission, anothing;
 	TextObj text_player_go, text_player_unit;
 	TextObj text_point, text_int_point;
-	int point = 45, point1 = 75;
+	int point, point1 = -10;
 	TextObj text_for_ban;
 	Mark mark;
 	std::list<Ban_mark*> banMark;
@@ -79,13 +79,13 @@ private:
 	void update() {
 		currTime = timer.getElapsedTime().asMilliseconds();
 		land();
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) && turn == 0) { 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2) && turn == 0) {
 			turn = 1;
 			point1 += 10;
 			for (auto banMarks : banMark)
 				banMarks->setDel();
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && turn == 1) { 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1) && turn == 1) {
 			turn = 0;
 			point += 10;
 			for (auto banMarks : banMark)
@@ -123,8 +123,8 @@ private:
 		sf::FloatRect markHitBox = mark.getHitBox();
 		for (auto banMarks : banMark) {
 			sf::FloatRect banMarkHitBox = banMarks->getHitBox();
-			if (markHitBox.intersects(banMarkHitBox)) { 
-				permission = 1; 
+			if (markHitBox.intersects(banMarkHitBox)) {
+				permission = 1;
 				text_for_ban.update("u can't do");
 			}
 		}
