@@ -12,7 +12,6 @@ public:
 	}
 
 	void update(int currTime) {
-
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && currTime - prevTimeMark > MARK_INTERVAL_TIME) {
 			setPosition(getPosition() + sf::Vector2f{ 0.f, BLOCK_HEIGHT + 5 });
 			prevTimeMark = currTime;
@@ -30,6 +29,7 @@ public:
 			prevTimeMark = currTime;
 		}
 	}
+
 private:
 	int prevTimeMark;
 };
